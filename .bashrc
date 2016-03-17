@@ -46,6 +46,20 @@ shopt -s cdspell
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+
+# ssh-agent Settings
+SSHAGENT=/usr/bin/ssh-agent
+export SSH_AGENT_PID=$(pgrep ssh-agent)
+
+SSH_AUTH_SOCK=$(ls -1 /tmp/ssh-*/* 2>/dev/null | head -n 1 )
+if [[ $(pgrep ssh-agent) == "" ]]; then
+        rm -r /tmp/ssh-* &>/dev/null;
+        eval $($SSHAGENT -s)
+else
+   export SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+   export SSH_AGENT_PID=$(ps -f|grep ssh-agent|awk '{print $2}')
+fi
+
 # completion
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
